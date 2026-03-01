@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Event Feedback DApp</title>
 
+    <!-- Web3 -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+
+    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
     <style>
@@ -26,9 +30,9 @@
             background: white;
             padding: 30px;
             width: 360px;
-            border-radius: 12px;
+            border-radius: 14px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
             transition: 0.3s;
         }
 
@@ -37,9 +41,22 @@
             color: white;
         }
 
+        h2 {
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        body.dark p {
+            color: #ccc;
+        }
+
         button {
             margin: 8px;
-            padding: 12px 20px;
+            padding: 12px 22px;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -52,7 +69,7 @@
         .toggle { background: #333; color: white; }
 
         .counter {
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 14px;
         }
 

@@ -1,19 +1,41 @@
-let web3, contract, account;
-const contractAddress = "PASTE_NEW_DEPLOYED_ADDRESS";
+let web3;
+let contract;
+let account;
+
+const contractAddress = "0x8B7b5f1d0461918fBe03976d643d4011860500eE";
 
 const abi = [
-  { "inputs": [], "name": "giveGoodFeedback", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  { "inputs": [], "name": "giveAverageFeedback", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  { "inputs": [], "name": "getFeedbackCounts", "outputs": [
-      { "type": "uint256" }, { "type": "uint256" }
-    ], "stateMutability": "view", "type": "function" }
+  {
+    "inputs": [],
+    "name": "giveGoodFeedback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "giveAverageFeedback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeedbackCounts",
+    "outputs": [
+      { "type": "uint256" },
+      { "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ];
 
-function showPopup(msg) {
-    const p = document.getElementById("popup");
-    p.innerText = msg;
-    p.style.display = "block";
-    setTimeout(() => p.style.display = "none", 2500);
+function showPopup(message) {
+    const popup = document.getElementById("popup");
+    popup.innerText = message;
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 2500);
 }
 
 function showSpinner(show) {
@@ -25,38 +47,60 @@ function shortAddress(addr) {
 }
 
 async function connectWallet() {
-    web3 = new Web3(window.ethereum);
-    const accs = await ethereum.request({ method: "eth_requestAccounts" });
-    account = accs[0];
+    if (!window.ethereum) {
+        showPopup("MetaMask not found");
+        return;
+    }
 
-    document.getElementById("wallet").innerText = "Wallet: " + shortAddress(account);
+    web3 = new Web3(window.ethereum);
+
+    const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts"
+    });
+
+    account = accounts[0];
+
     contract = new web3.eth.Contract(abi, contractAddress);
 
-    loadCounts();
-    showPopup("Wallet connected");
+    document.getElementById("wallet").innerText =
+        "Wallet: " + shortAddress(account);
+
+    await loadCounts();
+    showPopup("Wallet connected successfully");
 }
 
 async function loadCounts() {
+    if (!contract) return;
     const counts = await contract.methods.getFeedbackCounts().call();
     document.getElementById("goodCount").innerText = counts[0];
     document.getElementById("avgCount").innerText = counts[1];
 }
 
 async function goodFeedback() {
-    if (!contract) return showPopup("Connect wallet first");
+    if (!account || !contract) {
+        showPopup("Please connect MetaMask first");
+        return;
+    }
+
     showSpinner(true);
     await contract.methods.giveGoodFeedback().send({ from: account });
     showSpinner(false);
-    loadCounts();
+
+    await loadCounts();
     showPopup("Feedback submitted 👍");
 }
 
 async function averageFeedback() {
-    if (!contract) return showPopup("Connect wallet first");
+    if (!account || !contract) {
+        showPopup("Please connect MetaMask first");
+        return;
+    }
+
     showSpinner(true);
     await contract.methods.giveAverageFeedback().send({ from: account });
     showSpinner(false);
-    loadCounts();
+
+    await loadCounts();
     showPopup("Feedback submitted 😐");
 }
 
