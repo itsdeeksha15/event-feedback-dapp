@@ -107,3 +107,20 @@ async function averageFeedback() {
 function toggleTheme() {
     document.body.classList.toggle("dark");
 }
+// 🔥 AUTO-CONNECT IF WALLET IS ALREADY CONNECTED
+window.addEventListener("load", async () => {
+    if (window.ethereum) {
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+
+        if (accounts.length > 0) {
+            web3 = new Web3(window.ethereum);
+            account = accounts[0];
+            contract = new web3.eth.Contract(abi, contractAddress);
+
+            document.getElementById("wallet").innerText =
+                "Wallet: " + shortAddress(account);
+
+            await loadCounts();
+        }
+    }
+});
