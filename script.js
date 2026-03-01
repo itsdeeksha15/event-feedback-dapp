@@ -90,18 +90,15 @@ async function goodFeedback() {
     showPopup("Feedback submitted 👍");
 }
 
-async function averageFeedback() {
-    if (!account || !contract) {
-        showPopup("Please connect MetaMask first");
-        return;
-    }
+async function loadCounts() {
+    if (!contract) return;
 
-    showSpinner(true);
-    await contract.methods.giveAverageFeedback().send({ from: account });
-    showSpinner(false);
+    const counts = await contract.methods.getFeedbackCounts().call({
+        from: account
+    });
 
-    await loadCounts();
-    showPopup("Feedback submitted 😐");
+    document.getElementById("goodCount").innerText = Number(counts[0]);
+    document.getElementById("avgCount").innerText = Number(counts[1]);
 }
 
 function toggleTheme() {
