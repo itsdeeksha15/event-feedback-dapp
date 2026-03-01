@@ -1,67 +1,65 @@
-let web3;
-let contract;
-let account;
-
-const contractAddress = "PASTE_YOUR_DEPLOYED_CONTRACT_ADDRESS";
+let web3, contract, account;
+const contractAddress = "PASTE_NEW_DEPLOYED_ADDRESS";
 
 const abi = [
-  {
-    "inputs": [],
-    "name": "giveGoodFeedback",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "giveAverageFeedback",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+  { "inputs": [], "name": "giveGoodFeedback", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "giveAverageFeedback", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "getFeedbackCounts", "outputs": [
+      { "type": "uint256" }, { "type": "uint256" }
+    ], "stateMutability": "view", "type": "function" }
 ];
 
-function showPopup(message) {
-    const popup = document.getElementById("popup");
-    popup.innerText = message;
-    popup.style.display = "block";
+function showPopup(msg) {
+    const p = document.getElementById("popup");
+    p.innerText = msg;
+    p.style.display = "block";
+    setTimeout(() => p.style.display = "none", 2500);
+}
 
-    setTimeout(() => {
-        popup.style.display = "none";
-    }, 2500);
+function showSpinner(show) {
+    document.getElementById("spinner").style.display = show ? "block" : "none";
+}
+
+function shortAddress(addr) {
+    return addr.slice(0, 6) + "..." + addr.slice(-4);
 }
 
 async function connectWallet() {
-    if (!window.ethereum) {
-        showPopup("MetaMask not found");
-        return;
-    }
-
     web3 = new Web3(window.ethereum);
-    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-    account = accounts[0];
+    const accs = await ethereum.request({ method: "eth_requestAccounts" });
+    account = accs[0];
 
+    document.getElementById("wallet").innerText = "Wallet: " + shortAddress(account);
     contract = new web3.eth.Contract(abi, contractAddress);
 
-    showPopup("Wallet connected successfully");
+    loadCounts();
+    showPopup("Wallet connected");
+}
+
+async function loadCounts() {
+    const counts = await contract.methods.getFeedbackCounts().call();
+    document.getElementById("goodCount").innerText = counts[0];
+    document.getElementById("avgCount").innerText = counts[1];
 }
 
 async function goodFeedback() {
-    if (!contract) {
-        showPopup("Connect wallet first");
-        return;
-    }
-
+    if (!contract) return showPopup("Connect wallet first");
+    showSpinner(true);
     await contract.methods.giveGoodFeedback().send({ from: account });
-    showPopup("Thank you for your feedback 👍");
+    showSpinner(false);
+    loadCounts();
+    showPopup("Feedback submitted 👍");
 }
 
 async function averageFeedback() {
-    if (!contract) {
-        showPopup("Connect wallet first");
-        return;
-    }
-
+    if (!contract) return showPopup("Connect wallet first");
+    showSpinner(true);
     await contract.methods.giveAverageFeedback().send({ from: account });
-    showPopup("Feedback recorded 😐");
+    showSpinner(false);
+    loadCounts();
+    showPopup("Feedback submitted 😐");
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
 }

@@ -3,10 +3,7 @@
 <head>
     <title>Event Feedback DApp</title>
 
-    <!-- Web3 -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
     <style>
@@ -18,57 +15,47 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: 0.3s;
+        }
+
+        body.dark {
+            background: #121212;
         }
 
         .card {
             background: white;
             padding: 30px;
-            width: 350px;
+            width: 360px;
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #555;
-            font-size: 14px;
-        }
-
-        button {
-            margin: 10px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
             transition: 0.3s;
         }
 
-        .connect {
-            background: #667eea;
+        body.dark .card {
+            background: #1e1e1e;
             color: white;
         }
 
-        .good {
-            background: #4CAF50;
-            color: white;
+        button {
+            margin: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .average {
-            background: #FFC107;
-            color: black;
+        .connect { background: #667eea; color: white; }
+        .good { background: #4CAF50; color: white; }
+        .average { background: #FFC107; }
+        .toggle { background: #333; color: white; }
+
+        .counter {
+            margin-top: 10px;
+            font-size: 14px;
         }
 
-        button:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-
-        /* Popup */
         .popup {
             position: fixed;
             top: 20px;
@@ -79,6 +66,21 @@
             border-radius: 8px;
             display: none;
         }
+
+        .spinner {
+            display: none;
+            margin: 15px auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ccc;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -86,19 +88,26 @@
 
 <div class="card">
     <h2>Event Feedback</h2>
-    <p>Submit your feedback securely using blockchain</p>
+    <p id="wallet">Wallet: Not connected</p>
 
     <button class="connect" onclick="connectWallet()">Connect MetaMask</button>
+    <button class="toggle" onclick="toggleTheme()">Dark / Light</button>
 
-    <div style="margin-top:20px;">
+    <div style="margin-top:15px;">
         <button class="good" onclick="goodFeedback()">👍 Good</button>
         <button class="average" onclick="averageFeedback()">😐 Average</button>
+    </div>
+
+    <div class="spinner" id="spinner"></div>
+
+    <div class="counter">
+        👍 Good: <span id="goodCount">0</span> |
+        😐 Average: <span id="avgCount">0</span>
     </div>
 </div>
 
 <div class="popup" id="popup"></div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
